@@ -1,0 +1,27 @@
+---
+name: SysV-SharedMem
+version: 0.001
+author:
+  - 'Leon Timmermans <leont@cpan.org>'
+abstract: SysV Shared memory made easy
+license: perl
+resources:
+  license: http://dev.perl.org/licenses/
+build_requires:
+  ExtUtils::CBuilder: 0
+  Module::Build: 0.28
+  Test::More: 0
+requires:
+  Const::Fast: 0
+  Sub::Exporter: 0
+  perl: 5.008
+configure_requires:
+  Module::Build: 0.28
+provides:
+  SysV::SharedMem:
+    file: lib/SysV/SharedMem.pm
+    version: 0.001
+generated_by: Module::Build version 0.340201
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
