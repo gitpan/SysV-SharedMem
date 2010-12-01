@@ -11,7 +11,7 @@ use Sub::Exporter -setup => { exports => [qw/shared_open shared_remove shared_st
 
 use XSLoader;
 
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 XSLoader::load(__PACKAGE__, $VERSION);
 
 const my %flags_for => (
@@ -30,14 +30,16 @@ sub shared_open {
 		id     => 1,
 		perms  => oct 700,
 		key    => IPC_PRIVATE,
+		size   => 0,
 		%other,
 	);
 	$mode = '<' if not defined $mode;
 	croak 'No such mode' if not exists $flags_for{$mode};
 	croak 'Zero length specified for shared memory segment' if $options{size} == 0;
 	my $key = defined $filename ? ftok($filename, $options{id}) : $options{key};
+	croak "Invalid key: $!" if not defined $key;
 	my $id = shmget $key, $options{size}, $flags_for{$mode} | $options{perms};
-	croak "Can't open shared memory object $filename: $!" if not defined $id;
+	croak "Can't open shared memory object '$filename': $!" if not defined $id;
 
 	_shmat($_[0], $id, @options{qw/offset size/}, 0);
 	return;
@@ -53,7 +55,7 @@ SysV::SharedMem - SysV Shared memory made easy
 
 =head1 VERSION
 
-Version 0.003
+Version 0.004
 
 =head1 SYNOPSIS
 
