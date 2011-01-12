@@ -6,16 +6,16 @@ use warnings FATAL => 'all';
 
 use Carp qw/croak/;
 use Const::Fast;
-use IPC::SysV qw/ftok IPC_STAT IPC_RMID IPC_PRIVATE IPC_CREAT/;
+use IPC::SysV qw/ftok IPC_PRIVATE IPC_CREAT SHM_RDONLY/;
 use Sub::Exporter -setup => { exports => [qw/shared_open shared_remove shared_stat shared_chmod shared_chown/] };
 
 use XSLoader;
 
-our $VERSION = '0.004';
+our $VERSION = '0.005';
 XSLoader::load(__PACKAGE__, $VERSION);
 
 const my %flags_for => (
-	'<'  => 0,
+	'<'  => SHM_RDONLY,
 	'+<' => 0,
 	'>'  => 0,
 	'+>' => 0 | IPC_CREAT,
@@ -55,7 +55,7 @@ SysV::SharedMem - SysV Shared memory made easy
 
 =head1 VERSION
 
-Version 0.004
+Version 0.005
 
 =head1 SYNOPSIS
 

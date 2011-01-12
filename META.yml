@@ -19,11 +19,11 @@ name: SysV-SharedMem
 provides:
   SysV::SharedMem:
     file: lib/SysV/SharedMem.pm
-    version: 0.004
+    version: 0.005
 requires:
   Const::Fast: 0
   Sub::Exporter: 0
   perl: 5.008
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.004
+version: 0.005
