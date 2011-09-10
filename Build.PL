@@ -1,31 +1,45 @@
-use 5.008;
+
 use strict;
 use warnings;
-use Module::Build;
 
-my $builder = Module::Build->new(
-	module_name         => 'SysV::SharedMem',
-	license             => 'perl',
-	dist_author         => q{Leon Timmermans <leont@cpan.org>},
-	dist_version_from   => 'lib/SysV/SharedMem.pm',
-	configure_requires  => {
-		'Module::Build' => 0.28,
-	},
-	build_requires => {
-		'ExtUtils::CBuilder' => 0,
-		'Module::Build' => 0.28,
-		'Test::More'    => 0,
-		'Test::Warn'    => 0,
-		'Test::NoWarnings' => 0,
-	},
-	requires            => {
-		perl            => 5.008,
-		'Const::Fast'   => 0,
-		'Sub::Exporter' => 0,
-	},
-	add_to_cleanup      => [ 'SysV-SharedMem-*' ],
-	create_makefile_pl  => 'small',
-	sign                => 1,
+use Module::Build 0.3601;
+
+
+my %module_build_args = (
+  'build_requires' => {
+    'File::Find' => '0',
+    'File::Temp' => '0',
+    'Module::Build' => '0.3601',
+    'Test::Exception' => '0',
+    'Test::More' => '0',
+    'Test::NoWarnings' => '0',
+    'Test::Warn' => '0'
+  },
+  'configure_requires' => {
+    'Module::Build' => '0.3601'
+  },
+  'dist_abstract' => 'SysV Shared memory made easy',
+  'dist_author' => [
+    'Leon Timmermans <leont@cpan.org>'
+  ],
+  'dist_name' => 'SysV-SharedMem',
+  'dist_version' => '0.006',
+  'license' => 'perl',
+  'module_name' => 'SysV::SharedMem',
+  'recommends' => {},
+  'recursive_test_files' => 1,
+  'requires' => {
+    'Carp' => '0',
+    'Const::Fast' => '0',
+    'IPC::SysV' => '0',
+    'Sub::Exporter' => '0',
+    'XSLoader' => '0',
+    'perl' => '5.008'
+  },
+  'script_files' => []
 );
 
-$builder->create_build_script();
+
+my $build = Module::Build->new(%module_build_args);
+
+$build->create_build_script;

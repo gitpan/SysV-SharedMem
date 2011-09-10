@@ -1,4 +1,7 @@
 package SysV::SharedMem;
+BEGIN {
+  $SysV::SharedMem::VERSION = '0.006';
+}
 
 use 5.008;
 use strict;
@@ -11,13 +14,12 @@ use Sub::Exporter -setup => { exports => [qw/shared_open shared_remove shared_st
 
 use XSLoader;
 
-our $VERSION = '0.005';
-XSLoader::load(__PACKAGE__, $VERSION);
+XSLoader::load(__PACKAGE__, __PACKAGE__->VERSION);
 
 const my %flags_for => (
 	'<'  => SHM_RDONLY,
 	'+<' => 0,
-	'>'  => 0,
+	'>'  => 0 | IPC_CREAT,
 	'+>' => 0 | IPC_CREAT,
 );
 
@@ -28,7 +30,7 @@ sub shared_open {
 	my %options = (
 		offset => 0,
 		id     => 1,
-		perms  => oct 700,
+		perms  => oct 600,
 		key    => IPC_PRIVATE,
 		size   => 0,
 		%other,
@@ -47,7 +49,9 @@ sub shared_open {
 
 1;    # End of SysV::SharedMem
 
-__END__
+
+
+=pod
 
 =head1 NAME
 
@@ -55,7 +59,7 @@ SysV::SharedMem - SysV Shared memory made easy
 
 =head1 VERSION
 
-Version 0.005
+version 0.006
 
 =head1 SYNOPSIS
 
@@ -67,7 +71,7 @@ Version 0.005
 
 This module maps shared memory into a variable that can be read just like any other variable, and it can be written to using standard Perl techniques such as regexps and C<substr>, B<as long as they don't change the length of the variable>.
 
-=head1 METHODS
+=head1 FUNCTIONS
 
 =head2 shared_open($var, $filename, $mode, %options)
 
@@ -83,7 +87,7 @@ This determines the size of the map. Must be set if a new shared memory object i
 
 =item * perms
 
-This determines the permissions with which the file is created (if $mode is '+>'). Default is 0700.
+This determines the permissions with which the segment is created (if $mode is '>' or '+>'). Default is 0600.
 
 =item * offset
 
@@ -169,53 +173,19 @@ Change the owning uid and optionally gid of the shared memory object.
 
 =head1 AUTHOR
 
-Leon Timmermans, C<< <leont at cpan.org> >>
+Leon Timmermans <leont@cpan.org>
 
-=head1 BUGS
+=head1 COPYRIGHT AND LICENSE
 
-Please report any bugs or feature requests to C<bug-sysv-sharedmem at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=SysV-SharedMem>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
+This software is copyright (c) 2010 by Leon Timmermans.
 
-=head1 SUPPORT
-
-You can find documentation for this module with the perldoc command.
-
-    perldoc SysV::SharedMem
-
-
-You can also look for information at:
-
-=over 4
-
-=item * RT: CPAN's request tracker
-
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=SysV-SharedMem>
-
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/SysV-SharedMem>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/SysV-SharedMem>
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/SysV-SharedMem/>
-
-=back
-
-=head1 ACKNOWLEDGEMENTS
-
-=head1 LICENSE AND COPYRIGHT
-
-Copyright 2010 Leon Timmermans.
-
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
-
-See http://dev.perl.org/licenses/ for more information.
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut
+
+
+__END__
+
+# ABSTRACT: SysV Shared memory made easy
+
