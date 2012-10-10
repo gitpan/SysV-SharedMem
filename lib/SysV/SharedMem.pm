@@ -1,6 +1,6 @@
 package SysV::SharedMem;
-BEGIN {
-  $SysV::SharedMem::VERSION = '0.006';
+{
+  $SysV::SharedMem::VERSION = '0.007';
 }
 
 use 5.008;
@@ -10,7 +10,7 @@ use warnings FATAL => 'all';
 use Carp qw/croak/;
 use Const::Fast;
 use IPC::SysV qw/ftok IPC_PRIVATE IPC_CREAT SHM_RDONLY/;
-use Sub::Exporter -setup => { exports => [qw/shared_open shared_remove shared_stat shared_chmod shared_chown/] };
+use Sub::Exporter::Progressive -setup => { exports => [qw/shared_open shared_remove shared_stat shared_chmod shared_chown/] };
 
 use XSLoader;
 
@@ -59,7 +59,7 @@ SysV::SharedMem - SysV Shared memory made easy
 
 =head1 VERSION
 
-version 0.006
+version 0.007
 
 =head1 SYNOPSIS
 

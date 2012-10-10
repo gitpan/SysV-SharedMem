@@ -1,5 +1,9 @@
 Revision history for SysV-SharedMem
 
+0.007     2012-10-10 20:27:19 Europe/Amsterdam
+          Check for thinkfirst sv's properly
+          Removed superfluous tests
+
 0.006     2011-09-10 10:28:36 Europe/Amsterdam
           Fixed creation mode and permissions
           Converted to Dist::Zilla
