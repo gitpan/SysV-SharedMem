@@ -1,5 +1,9 @@
 Revision history for SysV-SharedMem
 
+0.008     2013-02-06 04:58:16 Europe/Amsterdam
+          Handle COW/THINKFIRST properly
+          Modernize magic storage
+
 0.007     2012-10-10 20:27:19 Europe/Amsterdam
           Check for thinkfirst sv's properly
           Removed superfluous tests
