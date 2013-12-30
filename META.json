@@ -4,7 +4,7 @@
       "Leon Timmermans <leont@cpan.org>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Zilla version 4.300028, CPAN::Meta::Converter version 2.120921",
+   "generated_by" : "Dist::Zilla version 5.008, CPAN::Meta::Converter version 2.132830",
    "license" : [
       "perl_5"
    ],
@@ -14,14 +14,9 @@
    },
    "name" : "SysV-SharedMem",
    "prereqs" : {
-      "build" : {
-         "requires" : {
-            "Module::Build" : "0.3601"
-         }
-      },
       "configure" : {
          "requires" : {
-            "Module::Build" : "0.3601"
+            "Module::Build::Tiny" : "0.030"
          }
       },
       "develop" : {
@@ -34,7 +29,6 @@
       "runtime" : {
          "requires" : {
             "Carp" : "0",
-            "Const::Fast" : "0",
             "IPC::SysV" : "0",
             "Sub::Exporter::Progressive" : "0",
             "XSLoader" : "0",
@@ -45,13 +39,19 @@
       },
       "test" : {
          "requires" : {
-            "File::Find" : "0",
-            "File::Temp" : "0",
-            "Test::Exception" : "0",
+            "File::Spec" : "0",
+            "IO::Handle" : "0",
+            "IPC::Open3" : "0",
+            "Test::Fatal" : "0",
             "Test::More" : "0",
-            "Test::NoWarnings" : "0",
-            "Test::Warn" : "0"
+            "Test::Warnings" : "0.005"
          }
+      }
+   },
+   "provides" : {
+      "SysV::SharedMem" : {
+         "file" : "lib/SysV/SharedMem.pm",
+         "version" : "0.009"
       }
    },
    "release_status" : "stable",
@@ -63,9 +63,9 @@
       "repository" : {
          "type" : "git",
          "url" : "git://github.com/Leont/sysv-sharedmem.git",
-         "web" : "http://github.com/Leont/sysv-sharedmem"
+         "web" : "https://github.com/Leont/sysv-sharedmem"
       }
    },
-   "version" : "0.008"
+   "version" : "0.009"
 }
 

@@ -154,7 +154,7 @@ static int svsh_free(pTHX_ SV* var, MAGIC* magic) {
 		MUTEX_UNLOCK(&info->count_mutex);
 	}
 #else
-	if (munmap(info->real_address, info->real_length) == -1)
+	if (shmdt(info->real_address) == -1)
 		die_sys(aTHX_ "Could not detach shared memory segment: %s");
 	PerlMemShared_free(info);
 #endif 
@@ -212,8 +212,20 @@ static void* do_mapping(pTHX_ int id, int flags) {
 	return address;
 }
 
+static void _my_shmctl(pTHX_ int id, int op, struct shmid_ds* buffer, const char* format) {
+	int ret = shmctl(id, op, buffer);
+	if (ret != 0)
+		croak_sys(aTHX_ format);
+}
+
+#define my_shmctl(id, op, buffer, format) _my_shmctl(aTHX_ id, op, buffer, format)
 static struct svsh_info* initialize_svsh_info(int shmid, void* address, size_t length, ptrdiff_t correction) {
 	struct svsh_info* magical = PerlMemShared_malloc(sizeof *magical);
+	if (length == 0) {
+		struct shmid_ds buffer;
+		my_shmctl(shmid, IPC_STAT, &buffer, "Could not establish size of shared memory segment: %s");
+		length = buffer.shm_segsz;
+	}
 	magical->shmid        = shmid;
 	magical->real_address = address;
 	magical->fake_address = (char*)address + correction;
@@ -250,13 +262,7 @@ static struct svsh_info* get_svsh_magic(pTHX_ SV* var, const char* funcname) {
 
 #define SET_HASH(key, value) hv_store(hash, key, sizeof key - 1, newSViv(value), 0)
 
-void _my_shmctl(pTHX_ int id, int op, struct shmid_ds* buffer, const char* format) {
-	int ret = shmctl(id, op, buffer);
-	if (ret != 0)
-		croak_sys(aTHX_ format);
-}
-
-#define my_shmctl(id, op, buffer, format) _my_shmctl(aTHX_ id, op, buffer, format)
+#define get_shmid(var, description) get_svsh_magic(aTHX_ var, description)->shmid
 
 MODULE = SysV::SharedMem				PACKAGE = SysV::SharedMem
 
@@ -269,13 +275,17 @@ _shmat(var, shmid, offset, length, flags)
 	ssize_t offset;
 	size_t length;
 	int flags;
+	PREINIT:
+		ptrdiff_t correction;
+		void* address;
+		struct svsh_info* magical;
 	CODE:
 		check_new_variable(aTHX_ var);
 		
-		ptrdiff_t correction = offset % page_size();
-		void* address = do_mapping(aTHX_ shmid, flags);
+		correction = offset % page_size();
+		address = do_mapping(aTHX_ shmid, flags);
 		
-		struct svsh_info* magical = initialize_svsh_info(shmid, address, length, correction);
+		magical = initialize_svsh_info(shmid, address, length, correction);
 		reset_var(var, magical);
 		add_magic(aTHX_ var, magical, 1);
 
@@ -287,8 +297,7 @@ shared_stat(var)
 		struct shmid_ds buffer;
 		HV* hash;
 	CODE:
-		shmid = get_svsh_magic(aTHX_ var, "shared_stat")->shmid;
-		my_shmctl(shmid, IPC_STAT, &buffer, "Could not shared_stat: %s");
+		my_shmctl(get_shmid(var, "shared_stat"), IPC_STAT, &buffer, "Could not shared_stat: %s");
 		
 		hash = newHV();
 		
@@ -319,7 +328,7 @@ shared_chown(var, uid, gid = &PL_sv_undef)
 	int shmid;
 	struct shmid_ds buffer;
 	CODE:
-		shmid = get_svsh_magic(aTHX_ var, "shared_chown")->shmid;
+		shmid = get_shmid(var, "shared_chown");
 		my_shmctl(shmid, IPC_STAT, &buffer, "Could not shared_chown: %s");
 		buffer.shm_perm.uid = uid;
 		if (SvOK(gid))
@@ -334,7 +343,7 @@ shared_chmod(var, mode)
 	int shmid;
 	struct shmid_ds buffer;
 	CODE:
-		shmid = get_svsh_magic(aTHX_ var, "shared_chmod")->shmid;
+		shmid = get_shmid(var, "shared_chmod");
 		my_shmctl(shmid, IPC_STAT, &buffer, "Could not shared_chmod: %s");
 		buffer.shm_perm.mode = (buffer.shm_perm.mode & ~0777) | (mode & 0777);
 		my_shmctl(shmid, IPC_SET, &buffer, "Could not shared_chmod: %s");
@@ -345,5 +354,19 @@ shared_remove(var)
 	PREINIT:
 	int shmid;
 	CODE:
-		shmid = get_svsh_magic(aTHX_ var, "shared_remove")->shmid;
-		my_shmctl(shmid, IPC_RMID, NULL, "Could not shared_remove: %s");
+		my_shmctl(get_shmid(var, "shared_remove"), IPC_RMID, NULL, "Could not shared_remove: %s");
+
+void
+shared_detach(var)
+	SV* var;
+	CODE:
+		get_svsh_magic(aTHX_ var, "shared_detach");
+		unmagic(var);
+
+IV
+shared_identifier(var)
+	SV* var;
+	CODE:
+		RETVAL = get_shmid(var, "shared_identifier");
+	OUTPUT:
+		RETVAL

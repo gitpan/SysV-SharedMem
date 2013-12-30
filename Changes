@@ -1,5 +1,12 @@
 Revision history for SysV-SharedMem
 
+0.009     2013-12-30 13:14:35 Europe/Amsterdam
+          *Backwards incompatible change*: new id option is a shm_id, not a proj_id. This also affects the order of precedence.
+          Allow detection of size of shared memory segment
+          Add shared_detach and shared_identifier
+          Fix detaching on unthreaded perls
+          Fix readonly flag on attaching
+
 0.008     2013-02-06 04:58:16 Europe/Amsterdam
           Handle COW/THINKFIRST properly
           Modernize magic storage
