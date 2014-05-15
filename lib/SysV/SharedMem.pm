@@ -1,6 +1,6 @@
 package SysV::SharedMem;
 {
-  $SysV::SharedMem::VERSION = '0.009';
+  $SysV::SharedMem::VERSION = '0.010';
 }
 
 use 5.008;
@@ -67,15 +67,13 @@ __END__
 
 =pod
 
-=encoding UTF-8
-
 =head1 NAME
 
 SysV::SharedMem - SysV Shared memory made easy
 
 =head1 VERSION
 
-version 0.009
+version 0.010
 
 =head1 SYNOPSIS
 
